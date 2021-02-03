@@ -16,10 +16,9 @@ struct Welcome: Codable {
     let main: Main
     
     let name: String
-    
-    
-   
-}
+    }
+
+
 
 
 
@@ -49,6 +48,11 @@ struct Weather: Codable {
         case  main
         case weatherDescription = "description"
     }
+}
+
+enum RequestType {
+  case getAll
+  case getSearchResult(searhText: String)
 }
 
 

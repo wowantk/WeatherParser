@@ -15,46 +15,49 @@ class ViewController: UIViewController {
     
     private var dataSourceObj:Welcome?
     private var refreshControl: UIRefreshControl?
-   
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         collection.register(UINib(nibName: "CollectionCell", bundle: nil), forCellWithReuseIdentifier: "CollectionCell")
-        
-        
-//        ViewController.performRequest { (is, rep) in
-//            print(rep)
-//            self.dataSourceObj = rep
-//            print(self.dataSourceObj)
-//        }
-        //refreshControl = UIRefreshControl()
-        //refreshControl?.addTarget(self, action: #selector(getAllData), for: .allEvents)
-        //collection.refreshControl = self.refreshControl
-       // refreshControl?.beginRefreshing()
         getAllData()
-        }
+    }
     
-        
-    
-
-    @objc private func getAllData() {
-        ViewController.performRequest() { [weak self] (isSuccess, response) in
-        guard let self = self else {return}
-        if isSuccess {
-          self.dataSourceObj = response
-            
+    @objc  func getSearch(with text:String){
+        ViewController.performRequest(with: .getSearchResult(searhText: text)) {  [weak self] (isSucces, response) in
+            guard let self = self else {return}
+            if isSucces {
+                self.dataSourceObj = response
+                DispatchQueue.main.async {
+                    self.collection.reloadData()
+                }
+            }
             
         }
-        DispatchQueue.main.async {
-          self.refreshControl?.endRefreshing()
-          if isSuccess { self.collection.reloadData() }
-        }
-      }
     }
     
     
-    static func performRequest( completion: @escaping (_ isSuccess: Bool, _ response: Welcome?) -> ()) {
-            let searchRep = "https://api.openweathermap.org/data/2.5/weather?q=Moscow&units=metric&appid=32d3eaae37de69896ce7b715acb51275"
-            guard let allRep = URL(string: searchRep) else {return}
+    
+    
+    @objc private func getAllData() {
+        ViewController.performRequest() { [weak self] (isSuccess, response) in
+            guard let self = self else {return}
+            if isSuccess {
+                self.dataSourceObj = response
+            }
+            DispatchQueue.main.async {
+                self.collection.reloadData()
+                if isSuccess { self.collection.reloadData() }
+            }
+        }
+    }
+    
+    static func performRequest(with requestType: RequestType = .getAll, completion: @escaping (_ isSuccess: Bool, _ response: Welcome?) -> ()) {
+        var repStringURL = ""
+        switch requestType {
+        case .getAll: repStringURL = "https://api.openweathermap.org/data/2.5/weather?q=Moscow&units=metric&appid=32d3eaae37de69896ce7b715acb51275"
+        case .getSearchResult(let searhText): repStringURL = "https://api.openweathermap.org/data/2.5/weather?q=\(searhText)&units=metric&appid=32d3eaae37de69896ce7b715acb51275"
+        }
+            guard let allRep = URL(string: repStringURL) else {return}
             URLSession.shared.dataTask(with: allRep) { (data, response, error) in
                 var result: Welcome?
                 guard data != nil else {
@@ -69,7 +72,10 @@ class ViewController: UIViewController {
                     return
                 }
                 do{
-                    result = try JSONDecoder().decode(Welcome.self, from: data!)
+                    switch requestType {
+                    case .getAll: result = try JSONDecoder().decode(Welcome.self, from: data!)
+                    case .getSearchResult(_): result = try JSONDecoder().decode(Welcome.self, from: data!)
+                    }
                     completion(true, result)
                 }catch{
                     print(error.localizedDescription)
@@ -78,7 +84,8 @@ class ViewController: UIViewController {
                 }
             }.resume()
         }
-    }
+    
+}
 
 
 extension ViewController:UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout{
@@ -94,24 +101,25 @@ extension ViewController:UICollectionViewDelegate,UICollectionViewDataSource,UIC
             }
         }
         cell.setUp(model: dataSourceObj!)
+        cell.ParentVC = self
         return cell
     }
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collection.frame.width ,height: collection.frame.height)
-
-    
-    
-    
-    
+        
+        
+        
+        
+        
+        
+    }
     
 }
 
-}
-    
-    
-    
+
+
 
 
 

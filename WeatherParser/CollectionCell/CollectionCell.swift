@@ -8,9 +8,12 @@
 import UIKit
 
 class CollectionCell: UICollectionViewCell {
+  
     @IBOutlet weak var name: UILabel!
     @IBOutlet weak var temp: UILabel!
     @IBOutlet weak var image: UIImageView!
+    var ParentVC:ViewController!
+    var cityText:String?
     
     
     override func awakeFromNib() {
@@ -27,6 +30,8 @@ class CollectionCell: UICollectionViewCell {
             self.image.image = UIImage(systemName: "cloud.rain")
         case "Clear":
             self.image.image = UIImage(systemName: "sun.min")
+        case "Clouds":
+            self.image.image = UIImage(systemName: "cloud.sun")
         default:
             self.image.image = UIImage(named: "sun.min")
         }
@@ -35,10 +40,16 @@ class CollectionCell: UICollectionViewCell {
     @IBAction func searchButton(_ sender: Any) {
         let alert = UIAlertController(title: "Enter your city", message: nil, preferredStyle: .alert)
         alert.addTextField(configurationHandler: nil)
-        let citySearch   = UIAlertAction(title: "Set your city ", style: .default, handler: nil)
+        let citySearch   = UIAlertAction(title: "Set your city ", style: .default) { (action) in
+            self.cityText = alert.textFields?.first?.text
+            self.ParentVC.getSearch(with: self.cityText ?? "Mykolaiv")
+        }
         alert.addAction(citySearch)
-        let vc = ViewController(nibName: "ViewController", bundle: nil)
-        vc.present(alert, animated: true, completion: nil)
+        ParentVC.present(alert, animated: true, completion: nil)
+        
+        
     }
+    
+    
     
 }

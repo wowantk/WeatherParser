@@ -43,7 +43,7 @@
                             </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" red="1" green="0.14913141730000001" blue="0.0" alpha="0.74831048696319014" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="BPO-Ik-5rj" secondAttribute="trailing" id="Mfm-80-y4P"/>
                             <constraint firstItem="BPO-Ik-5rj" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="RSD-5R-zob"/>
